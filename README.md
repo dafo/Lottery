@@ -1,0 +1,2 @@
+# Lottery
+Simplified Lottery Game
