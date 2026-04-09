@@ -2,7 +2,7 @@
 
 namespace Lottery.Core.Services
 {
-    internal class NumberGenerator : INumberGenerator
+    public class NumberGenerator : INumberGenerator
     {
         public int Generate(int minVal, int maxVal)
         {
