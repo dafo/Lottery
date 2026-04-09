@@ -42,7 +42,7 @@ namespace Lottery.Core.Services
                     ? humanTicketCount
                     : _numberGenerator.Generate(
                         _settings.MinNumberOfTicketsPerPlayer,
-                        _settings.MaxNumberOfTicketsPerPlayer);
+                        _settings.MaxNumberOfTicketsPerPlayer + 1);
 
                 _ticketService.PurchaseTickets(player, count);
             }
