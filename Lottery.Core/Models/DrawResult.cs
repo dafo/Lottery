@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Lottery.Core.Models
+﻿namespace Lottery.Core.Models
 {
     public class DrawResult
     {
