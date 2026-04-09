@@ -16,8 +16,20 @@ namespace Lottery
                 .AddJsonFile("appsettings.json", optional: false)
                 .Build();
 
-            return config.GetSection("LotterySettings").Get<LotterySettings>()
+            var settings = config.GetSection("LotterySettings").Get<LotterySettings>()
                 ?? throw new InvalidOperationException("LotterySettings section is missing from appsettings.json.");
+
+            ValidateSettings(settings);
+
+            return settings;
+        }
+
+        public static void ValidateSettings(LotterySettings settings)
+        {
+            var totalRevenueRate = settings.PrizeLevels.Sum(p => p.RevenueRate);
+            if (totalRevenueRate > 1m)
+                throw new InvalidOperationException(
+                    $"Prize level revenue rates sum to {totalRevenueRate:P0}, which exceeds 100% of total revenue.");
         }
 
         public static ServiceProvider BuildServiceProvider(LotterySettings settings)
