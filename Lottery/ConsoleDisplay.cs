@@ -47,7 +47,7 @@ namespace Lottery
                 else
                 {
                     var prizePerTicket = tier.Winners[0].PrizePerTicket;
-                    var playerList = string.Join(", ", tier.Winners.Select(w => w.Display()));
+                    var playerList = string.Join(", ", tier.Winners.OrderBy(w => w.PlayerId).Select(w => w.Display()));
                     Console.WriteLine($"* {tier.TierName}: Players {playerList} win {prizePerTicket:C} per winning ticket!");
                 }
             }
