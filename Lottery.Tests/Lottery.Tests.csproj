@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Lottery.Core\Lottery.Core.csproj" />
+    <ProjectReference Include="..\Lottery\Lottery.csproj" />
   </ItemGroup>
 
   <ItemGroup>

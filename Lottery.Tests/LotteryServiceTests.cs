@@ -214,7 +214,24 @@ namespace Lottery.Tests
         }
 
         [Fact]
-        public void RunDraw_WinningTicketsRemovedBetweenTiers()
+        public void RunDraw_SameTicketCannotWinInMultipleTiers()
+        {
+            var service = CreateServiceWithRealTickets(playerCount: 10, ticketsPerPlayer: 1);
+            service.SetupPlayers();
+            service.PurchaseTickets(1);
+
+            var result = service.RunDraw();
+
+            var winningPlayerIds = result.TierResults
+                .SelectMany(t => t.Winners)
+                .Select(w => w.PlayerId)
+                .ToList();
+
+            Assert.Equal(winningPlayerIds.Count, winningPlayerIds.Distinct().Count());
+        }
+
+        [Fact]
+        public void RunDraw_PlayerWinningMultipleTicketsInTier_GroupedIntoSingleWinner()
         {
             var service = CreateServiceWithRealTickets(playerCount: 10, ticketsPerPlayer: 5);
             service.SetupPlayers();
@@ -222,11 +239,43 @@ namespace Lottery.Tests
 
             var result = service.RunDraw();
 
-            var totalWinningTickets = result.TierResults
-                .SelectMany(t => t.Winners)
-                .Sum(w => w.NumberOfWinningTickets);
+            var secondTier = result.TierResults.First(t => t.TierName == "Second Tier");
+            var player1Rows = secondTier.Winners.Where(w => w.PlayerId == 1).ToList();
 
-            Assert.True(totalWinningTickets <= 50);
+            Assert.Single(player1Rows);
+            Assert.Equal(4, player1Rows[0].NumberOfWinningTickets);
+            Assert.Equal(player1Rows[0].PrizePerTicket * 4, player1Rows[0].TotalPrize);
+        }
+
+        [Fact]
+        public void RunDraw_PrizePerTicketMatchesFormula()
+        {
+            var service = CreateServiceWithRealTickets(playerCount: 10, ticketsPerPlayer: 5);
+            service.SetupPlayers();
+            service.PurchaseTickets(5);
+
+            var result = service.RunDraw();
+
+            var grandPrize = result.TierResults.First(t => t.TierName == "Grand Prize");
+            var secondTier = result.TierResults.First(t => t.TierName == "Second Tier");
+            var thirdTier = result.TierResults.First(t => t.TierName == "Third Tier");
+
+            Assert.Equal(25m, grandPrize.Winners.Single().PrizePerTicket);
+            Assert.All(secondTier.Winners, w => Assert.Equal(3m, w.PrizePerTicket));
+            Assert.All(thirdTier.Winners, w => Assert.Equal(0.50m, w.PrizePerTicket));
+        }
+
+        [Fact]
+        public void RunDraw_HouseProfitMatchesFormula()
+        {
+            var service = CreateServiceWithRealTickets(playerCount: 10, ticketsPerPlayer: 5);
+            service.SetupPlayers();
+            service.PurchaseTickets(5);
+
+            var result = service.RunDraw();
+
+            Assert.Equal(50m, result.TotalRevenue);
+            Assert.Equal(5m, result.HouseProfit);
         }
     }
 }
