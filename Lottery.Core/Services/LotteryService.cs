@@ -50,16 +50,16 @@ namespace Lottery.Core.Services
 
         public DrawResult RunDraw()
         {
-            var allTickets = _players.SelectMany(p => p.LotteryTickets).ToList();
-            var totalRevenue = allTickets.Count * _settings.TicketPrice;
-            var availableTickets = allTickets.ToList();
+            var availableTickets = _players.SelectMany(p => p.LotteryTickets).ToList();
+            var totalTicketCount = availableTickets.Count;
+            var totalRevenue = totalTicketCount * _settings.TicketPrice;
             var tierResults = new List<TierResult>();
             var totalPrizesAwarded = 0m;
 
             foreach (var prizeLevel in _settings.PrizeLevels)
             {
                 var prizePool = totalRevenue * prizeLevel.RevenueRate;
-                var winnerCount = DetermineWinnerCount(prizeLevel, allTickets.Count);
+                var winnerCount = DetermineWinnerCount(prizeLevel, totalTicketCount);
 
                 if (winnerCount == 0 || availableTickets.Count == 0)
                 {
@@ -78,11 +78,10 @@ namespace Lottery.Core.Services
                     .GroupBy(t => t.OwnerId)
                     .Select(g =>
                     {
-                        var player = _players.First(p => p.Id == g.Key);
                         var ticketsWon = g.Count();
                         return new Winner
                         {
-                            PlayerId = player.Id,
+                            PlayerId = g.Key,
                             NumberOfWinningTickets = ticketsWon,
                             PrizePerTicket = prizePerTicket,
                             TotalPrize = prizePerTicket * ticketsWon
