@@ -14,13 +14,19 @@ namespace Lottery
         public static int AskTicketCount(LotterySettings settings)
         {
             Console.Write($"How many tickets do you want to buy, Player 1? ({settings.MinNumberOfTicketsPerPlayer}-{settings.MaxNumberOfTicketsPerPlayer}): ");
-            if (!int.TryParse(Console.ReadLine(), out var count)
-                  || count < settings.MinNumberOfTicketsPerPlayer
-                  || count > settings.MaxNumberOfTicketsPerPlayer)
+
+            if (!int.TryParse(Console.ReadLine(), out var count) || count < settings.MinNumberOfTicketsPerPlayer)
             {
                 Console.WriteLine($"Invalid input. Defaulting to {settings.MinNumberOfTicketsPerPlayer} ticket.");
                 return settings.MinNumberOfTicketsPerPlayer;
             }
+
+            if (count > settings.MaxNumberOfTicketsPerPlayer)
+            {
+                Console.WriteLine($"Requested {count} exceeds the maximum. Buying {settings.MaxNumberOfTicketsPerPlayer} tickets instead.");
+                return settings.MaxNumberOfTicketsPerPlayer;
+            }
+
             return count;
         }
 
