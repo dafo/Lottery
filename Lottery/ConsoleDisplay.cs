@@ -23,7 +23,7 @@ namespace Lottery
 
             if (count > settings.MaxNumberOfTicketsPerPlayer)
             {
-                Console.WriteLine($"Requested {count} exceeds the maximum. Buying {settings.MaxNumberOfTicketsPerPlayer} tickets instead.");
+                Console.WriteLine($"Requested {count} exceeds the maximum. Buying the maximum number of tickets your balance allows instead.");
                 return settings.MaxNumberOfTicketsPerPlayer;
             }
 
